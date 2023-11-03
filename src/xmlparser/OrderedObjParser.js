@@ -178,7 +178,7 @@ function buildAttributesMap(attrStr, jPath, tagName) {
 
 const parseXml = function(xmlData) {
   xmlData = xmlData.replace(/\r\n?/g, "\n"); //TODO: remove this line
-  const xmlObj = new xmlNode('!xml');
+  const xmlObj = new xmlNode('!xml', 1);
   let currentNode = xmlObj;
   let textData = "";
   let jPath = "";
@@ -232,8 +232,8 @@ const parseXml = function(xmlData) {
         if( (this.options.ignoreDeclaration && tagData.tagName === "?xml") || this.options.ignorePiTags){
 
         }else{
-  
-          const childNode = new xmlNode(tagData.tagName);
+          const lineNumber = util.getLineNumber(xmlData, i)
+          const childNode = new xmlNode(tagData.tagName, lineNumber);
           childNode.add(this.options.textNodeName, "");
           
           if(tagData.tagName !== tagData.tagExp && tagData.attrExpPresent){
@@ -307,6 +307,8 @@ const parseXml = function(xmlData) {
           jPath += jPath ? "." + tagName : tagName;
         }
         if (this.isItStopNode(this.options.stopNodes, jPath, tagName)) {
+          const lineNumber = util.getLineNumber(xmlData, i)
+
           let tagContent = "";
           //self-closing tag
           if(tagExp.length > 0 && tagExp.lastIndexOf("/") === tagExp.length - 1){
@@ -325,7 +327,7 @@ const parseXml = function(xmlData) {
             tagContent = result.tagContent;
           }
 
-          const childNode = new xmlNode(tagName);
+          const childNode = new xmlNode(tagName, lineNumber);
           if(tagName !== tagExp && attrExpPresent){
             childNode[":@"] = this.buildAttributesMap(tagExp, jPath, tagName);
           }
@@ -351,8 +353,9 @@ const parseXml = function(xmlData) {
             if(this.options.transformTagName) {
               tagName = this.options.transformTagName(tagName);
             }
-
-            const childNode = new xmlNode(tagName);
+            
+            const lineNumber = util.getLineNumber(xmlData, i)
+            const childNode = new xmlNode(tagName, lineNumber);
             if(tagName !== tagExp && attrExpPresent){
               childNode[":@"] = this.buildAttributesMap(tagExp, jPath, tagName);
             }
@@ -361,7 +364,8 @@ const parseXml = function(xmlData) {
           }
     //opening tag
           else{
-            const childNode = new xmlNode( tagName);
+            const lineNumber = util.getLineNumber(xmlData, i)
+            const childNode = new xmlNode(tagName, lineNumber);
             this.tagsNodeStack.push(currentNode);
             
             if(tagName !== tagExp && attrExpPresent){

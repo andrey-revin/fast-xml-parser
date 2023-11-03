@@ -64,6 +64,18 @@ exports.getValue = function(v) {
   }
 };
 
+exports.getLineNumber = function(str, index) {
+  if (index === 0) {
+      return 1;
+  }
+  //adjust for negative pos
+  if (index < 0) {
+    index = str.length + index;
+  }
+  var lines = str.substr(0, index).match(/[\n]/g);
+  return lines ? lines.length + 1 : 1;
+};
+
 // const fakeCall = function(a) {return a;};
 // const fakeCallNoReturn = function() {};
 

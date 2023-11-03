@@ -1,8 +1,9 @@
 'use strict';
 
 class XmlNode{
-  constructor(tagname) {
+  constructor(tagname, lineNumber) {
     this.tagname = tagname;
+    this.lineNumber = lineNumber;
     this.child = []; //nested tags, text, cdata, comments in order
     this[":@"] = {}; //attributes map
   }
@@ -14,9 +15,9 @@ class XmlNode{
   addChild(node) {
     if(node.tagname === "__proto__") node.tagname = "#__proto__";
     if(node[":@"] && Object.keys(node[":@"]).length > 0){
-      this.child.push( { [node.tagname]: node.child, [":@"]: node[":@"] });
+      this.child.push( { [node.tagname]: node.child, [":@"]: node[":@"], lineNumber: node.lineNumber });
     }else{
-      this.child.push( { [node.tagname]: node.child });
+      this.child.push( { [node.tagname]: node.child, lineNumber: node.lineNumber });
     }
   };
 };
